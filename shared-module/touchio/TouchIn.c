@@ -43,7 +43,8 @@
 // over N_SAMPLES cycles to reduce the effects of noise.
 
 #define N_SAMPLES 10
-#define TIMEOUT_TICKS 10000
+// HHR: increase from 10000 because we use more than 1Mohm
+#define TIMEOUT_TICKS 32767
 
 static uint16_t get_raw_reading(touchio_touchin_obj_t *self) {
 
@@ -77,9 +78,10 @@ void common_hal_touchio_touchin_construct(touchio_touchin_obj_t *self, const mcu
     common_hal_digitalio_digitalinout_construct(self->digitalinout, pin);
 
     uint16_t raw_reading = get_raw_reading(self);
-    if (raw_reading == TIMEOUT_TICKS) {
-        mp_raise_ValueError(translate("No pulldown on pin; 1Mohm recommended"));
-    }
+    // if (raw_reading == TIMEOUT_TICKS) {
+    //     common_hal_touchio_touchin_deinit(self);
+    //     mp_raise_ValueError("Timeout on pin; resistor unsuitable");
+    // }
     self->threshold = raw_reading * 1.05 + 100;
 }
 
